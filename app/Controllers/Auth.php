@@ -67,19 +67,17 @@ class Auth extends ResourceController
             return $this->respond($output, 400);
         }
     }
- 
+    
     public function login()
     {
         $email      = $this->request->getPost('email');
         $password   = $this->request->getPost('password');
  
         $cek_login = $this->auth->cek_login($email);
- 
-        // var_dump($cek_login['password']);
- 
         if(password_verify($password, $cek_login['password']))
         {
             $secret_key = $this->privateKey();
+            
             $issuer_claim = "THE_CLAIM"; // this can be the servername. Example: https://domain.com
             $audience_claim = "THE_AUDIENCE";
             $issuedat_claim = time(); // issued at
@@ -98,9 +96,10 @@ class Auth extends ResourceController
                     "email" => $cek_login['email']
                 )
             );
- 
+        
             $token = JWT::encode($token, $secret_key);
- 
+
+
             $output = [
                 'status' => 200,
                 'message' => 'Berhasil login',
@@ -108,6 +107,7 @@ class Auth extends ResourceController
                 "email" => $email,
                 "expireAt" => $expire_claim
             ];
+            
             return $this->respond($output, 200);
         } else {
             $output = [
@@ -119,7 +119,5 @@ class Auth extends ResourceController
         }
     }
     
-    public function logout() {
-        
-    }
+    // jwt can't logout, it'll expire in several times
 }
